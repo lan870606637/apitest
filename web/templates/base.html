@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}API 测试平台{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="layout">
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <h2>API 测试平台</h2>
+        <nav>
+            <a href="/" class="{% if page == 'dashboard' %}active{% endif %}">
+                <span class="icon">&#9632;</span> 仪表盘
+            </a>
+            <a href="/cases" class="{% if page == 'cases' %}active{% endif %}">
+                <span class="icon">&#9776;</span> 用例管理
+            </a>
+            <a href="/runs" class="{% if page == 'runs' %}active{% endif %}">
+                <span class="icon">&#9654;</span> 执行记录
+            </a>
+            <a href="/envs" class="{% if page == 'envs' %}active{% endif %}">
+                <span class="icon">&#9881;</span> 环境配置
+            </a>
+        </nav>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

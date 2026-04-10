@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}仪表盘 - API 测试平台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>仪表盘</h1>
+    <div>
+        {% if active_env %}
+        <span class="badge badge-info">当前环境: {{ active_env.name }} ({{ active_env.base_url }})</span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="stats">
+    <div class="stat-card">
+        <div class="number">{{ total_cases }}</div>
+        <div class="label">总用例数</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ modules|length }}</div>
+        <div class="label">测试模块</div>
+    </div>
+    <div class="stat-card success">
+        <div class="number">{{ runs[0].passed if runs else 0 }}</div>
+        <div class="label">最近通过</div>
+    </div>
+    <div class="stat-card danger">
+        <div class="number">{{ runs[0].failed if runs else 0 }}</div>
+        <div class="label">最近失败</div>
+    </div>
+</div>
+
+<!-- 快捷操作 -->
+<div class="card">
+    <div class="card-header">快捷操作</div>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <form action="/run/pytest" method="post" style="display:inline">
+            <button class="btn btn-primary" type="submit">运行全部 Pytest 用例</button>
+        </form>
+        <form action="/run/pytest" method="post" style="display:inline">
+            <input type="hidden" name="markers" value="smoke">
+            <button class="btn btn-success" type="submit">运行冒烟测试</button>
+        </form>
+        <form action="/run/db-cases" method="post" style="display:inline">
+            <button class="btn btn-outline" type="submit">运行平台录入用例</button>
+        </form>
+        <a href="/cases/new" class="btn btn-outline">新建用例</a>
+    </div>
+</div>
+
+<!-- 最近执行记录 -->
+<div class="card">
+    <div class="card-header">最近执行记录</div>
+    {% if runs %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>类型</th>
+                <th>状态</th>
+                <th>通过/失败/跳过</th>
+                <th>耗时</th>
+                <th>时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for run in runs %}
+            <tr>
+                <td>{{ run.id }}</td>
+                <td><span class="badge badge-gray">{{ run.run_type }}</span></td>
+                <td>
+                    {% if run.status == 'passed' %}
+                        <span class="badge badge-success">通过</span>
+                    {% elif run.status == 'running' %}
+                        <span class="badge badge-warning">运行中</span>
+                    {% else %}
+                        <span class="badge badge-danger">失败</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span style="color:var(--success)">{{ run.passed }}</span> /
+                    <span style="color:var(--danger)">{{ run.failed }}</span> /
+                    <span style="color:var(--gray-500)">{{ run.skipped }}</span>
+                    {% if run.total > 0 %}
+                    <div class="progress-bar">
+                        <div class="fill fill-success" style="width:{{ (run.passed / run.total * 100)|round }}%"></div>
+                    </div>
+                    {% endif %}
+                </td>
+                <td>{{ run.duration }}s</td>
+                <td>{{ run.started_at }}</td>
+                <td><a href="/runs/{{ run.id }}" class="btn btn-outline btn-sm">详情</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+        <p>暂无执行记录，点击上方按钮开始运行</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

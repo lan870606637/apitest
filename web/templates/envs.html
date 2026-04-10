@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}环境配置 - API 测试平台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>环境配置</h1>
+</div>
+
+<p style="color: var(--gray-500); margin-bottom: 20px;">
+    点击「切换」按钮选择当前测试环境，平台录入的用例执行时将使用选中环境的地址。
+</p>
+
+<div class="env-cards">
+    {% for env in envs %}
+    <div class="env-card {% if env.is_active %}active{% endif %}">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>
+                {{ env.name|upper }}
+                {% if env.is_active %}
+                <span class="badge badge-success" style="font-size:11px; vertical-align:middle;">当前</span>
+                {% endif %}
+            </h3>
+            {% if not env.is_active %}
+            <form action="/envs/{{ env.id }}/switch" method="post">
+                <button class="btn btn-outline btn-sm" type="submit">切换</button>
+            </form>
+            {% endif %}
+        </div>
+        <p class="url" style="margin-top: 10px;">{{ env.base_url }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card" style="margin-top: 24px;">
+    <div class="card-header">说明</div>
+    <ul style="color: var(--gray-500); font-size: 14px; padding-left: 20px; line-height: 2;">
+        <li><strong>平台录入用例</strong>执行时使用此处选中的环境地址</li>
+        <li><strong>Pytest 代码用例</strong>使用 <code>config/config.yaml</code> 中的配置，通过环境变量 <code>ENV</code> 切换</li>
+        <li>如需新增环境，可直接修改 <code>config/config.yaml</code> 或后续在此页面添加</li>
+    </ul>
+</div>
+{% endblock %}

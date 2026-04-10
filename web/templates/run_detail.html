@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}执行详情 #{{ run.id }} - API 测试平台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>执行详情 #{{ run.id }}</h1>
+    <a href="/runs" class="btn btn-outline">返回列表</a>
+</div>
+
+{% if run %}
+<!-- 统计 -->
+<div class="stats">
+    <div class="stat-card">
+        <div class="number">{{ run.total }}</div>
+        <div class="label">总用例</div>
+    </div>
+    <div class="stat-card success">
+        <div class="number">{{ run.passed }}</div>
+        <div class="label">通过</div>
+    </div>
+    <div class="stat-card danger">
+        <div class="number">{{ run.failed }}</div>
+        <div class="label">失败</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ run.duration }}s</div>
+        <div class="label">耗时</div>
+    </div>
+</div>
+
+<!-- 信息 -->
+<div class="card">
+    <div class="card-header">执行信息</div>
+    <table>
+        <tr><th style="width:120px">执行类型</th><td>{{ run.run_type }}</td></tr>
+        <tr>
+            <th>状态</th>
+            <td>
+                {% if run.status == 'passed' %}
+                    <span class="badge badge-success">通过</span>
+                {% elif run.status == 'running' %}
+                    <span class="badge badge-warning">运行中</span>
+                {% else %}
+                    <span class="badge badge-danger">{{ run.status }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr><th>开始时间</th><td>{{ run.started_at }}</td></tr>
+        <tr><th>结束时间</th><td>{{ run.finished_at or '-' }}</td></tr>
+        {% if run.total > 0 %}
+        <tr>
+            <th>通过率</th>
+            <td>
+                {{ (run.passed / run.total * 100)|round(1) }}%
+                <div class="progress-bar" style="max-width:300px">
+                    <div class="fill fill-success" style="width:{{ (run.passed / run.total * 100)|round }}%"></div>
+                </div>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+<!-- 日志 -->
+<div class="card">
+    <div class="card-header">执行日志</div>
+    <div class="log-box">{{ run.log or '暂无日志' }}</div>
+</div>
+{% else %}
+<div class="empty">
+    <p>未找到该执行记录</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+# 亿驾 v3.3.3 客户端接口 - 环境配置
+environments:
+  dev:
+    base_url: "http://api.carbit.com.cn/v3.3.3"
+    timeout: 15
+    retry_count: 2
+  qa:
+    base_url: "http://qa-api.carbit.com.cn/v3.3.3"
+    timeout: 15
+    retry_count: 3
+  prod:
+    base_url: "https://api.carbit.com.cn/v3.3.3"
+    timeout: 20
+    retry_count: 3
+
+# 当前使用的环境（可通过环境变量 ENV 覆盖）
+current_env: dev
+
+# 日志配置
+logging:
+  level: DEBUG
+  format: "%(asctime)s [%(levelname)s] %(message)s"
+  file: "reports/test.log"

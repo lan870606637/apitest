@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}{{ '编辑用例' if case else '新建用例' }} - API 测试平台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ '编辑用例' if case else '新建用例' }}</h1>
+    <a href="/cases" class="btn btn-outline">返回列表</a>
+</div>
+
+<div class="card">
+    <form action="/cases/save" method="post">
+        {% if case %}
+        <input type="hidden" name="case_id" value="{{ case.id }}">
+        {% endif %}
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>用例名称 *</label>
+                <input type="text" name="name" value="{{ case.name if case else '' }}" required
+                       placeholder="例如：测试用户登录接口">
+            </div>
+            <div class="form-group">
+                <label>所属模块</label>
+                <input type="text" name="module" value="{{ case.module if case else '默认模块' }}"
+                       list="module-list" placeholder="输入模块名称">
+                <datalist id="module-list">
+                    {% for m in modules %}
+                    <option value="{{ m }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>请求方法</label>
+                <select name="method">
+                    {% for m in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] %}
+                    <option value="{{ m }}" {% if case and case.method == m %}selected{% endif %}>{{ m }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>接口路径 *</label>
+                <input type="text" name="path" value="{{ case.path if case else '' }}" required
+                       placeholder="例如：/user/login">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>请求头 (JSON)</label>
+            <textarea name="headers" rows="3" placeholder='{"Authorization": "Bearer xxx"}'>{{ case.headers if case else '{}' }}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Query 参数 (JSON)</label>
+                <textarea name="params" rows="3" placeholder='{"page": 1, "size": 10}'>{{ case.params if case else '{}' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>请求体 (JSON)</label>
+                <textarea name="body" rows="3" placeholder='{"username": "admin", "password": "123"}'>{{ case.body if case else '{}' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>期望状态码</label>
+                <input type="number" name="expected_status" value="{{ case.expected_status if case else 200 }}">
+            </div>
+            <div class="form-group">
+                <label>期望响应 (JSON 子集校验)</label>
+                <textarea name="expected_json" rows="3" placeholder='{"code": 0}'>{{ case.expected_json if case else '{}' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>用例描述</label>
+            <textarea name="description" rows="2" placeholder="简要描述该用例的测试目的">{{ case.description if case else '' }}</textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button type="submit" class="btn btn-primary">{{ '保存修改' if case else '创建用例' }}</button>
+            <a href="/cases" class="btn btn-outline">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
