@@ -1,5 +1,7 @@
 """参数提取器 - 用 JSONPath 或正则从响应中提取关联参数。"""
 
+from __future__ import annotations
+
 import re
 from jsonpath_ng.ext import parse as jsonpath_parse
 from requests import Response

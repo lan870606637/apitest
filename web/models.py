@@ -1,5 +1,7 @@
 """数据模型 - SQLite 存储测试用例和执行记录。"""
 
+from __future__ import annotations
+
 import sqlite3
 import json
 from datetime import datetime
