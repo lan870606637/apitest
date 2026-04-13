@@ -1,5 +1,7 @@
 """测试执行器 - 调用 pytest 运行用例并收集结果。"""
 
+from __future__ import annotations
+
 import subprocess
 import time
 import json
