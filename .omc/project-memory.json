@@ -1,0 +1,206 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1776148200995,
+  "projectRoot": "D:\\jiaoben\\api_test",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "requirements.txt"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "pip",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 3,
+      "lastAccessed": 1776148200969,
+      "keyFiles": [
+        "config.yaml",
+        "__init__.py"
+      ]
+    },
+    "core": {
+      "path": "core",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1776148200969,
+      "keyFiles": [
+        "assert_helper.py",
+        "auth.py",
+        "extractor.py",
+        "http_client.py",
+        "__init__.py"
+      ]
+    },
+    "data": {
+      "path": "data",
+      "purpose": "Data files",
+      "fileCount": 1,
+      "lastAccessed": 1776148200969,
+      "keyFiles": [
+        "__init__.py"
+      ]
+    },
+    "reports": {
+      "path": "reports",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1776148200970,
+      "keyFiles": [
+        "report.html",
+        "test.log"
+      ]
+    },
+    "testcases": {
+      "path": "testcases",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1776148200970,
+      "keyFiles": [
+        "conftest.py",
+        "__init__.py"
+      ]
+    },
+    "web": {
+      "path": "web",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1776148200970,
+      "keyFiles": [
+        "app.py",
+        "models.py",
+        "runner.py",
+        "test_platform.db",
+        "__init__.py"
+      ]
+    },
+    "web\\static": {
+      "path": "web\\static",
+      "purpose": "Static files",
+      "fileCount": 1,
+      "lastAccessed": 1776148200970,
+      "keyFiles": [
+        "style.css"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "客户端接口V3.0文档.md",
+      "accessCount": 8,
+      "lastAccessed": 1776148269891,
+      "type": "file"
+    },
+    {
+      "path": "core\\http_client.py",
+      "accessCount": 6,
+      "lastAccessed": 1776149533776,
+      "type": "file"
+    },
+    {
+      "path": "config\\config.yaml",
+      "accessCount": 5,
+      "lastAccessed": 1776149583647,
+      "type": "file"
+    },
+    {
+      "path": "core\\auth.py",
+      "accessCount": 4,
+      "lastAccessed": 1776149534811,
+      "type": "file"
+    },
+    {
+      "path": "config\\__init__.py",
+      "accessCount": 4,
+      "lastAccessed": 1776149537192,
+      "type": "file"
+    },
+    {
+      "path": "testcases\\conftest.py",
+      "accessCount": 3,
+      "lastAccessed": 1776149535691,
+      "type": "file"
+    },
+    {
+      "path": "testcases\\test_api_v3.py",
+      "accessCount": 3,
+      "lastAccessed": 1776149536538,
+      "type": "file"
+    },
+    {
+      "path": "core\\sign.py",
+      "accessCount": 3,
+      "lastAccessed": 1776149537852,
+      "type": "file"
+    },
+    {
+      "path": "data\\test_data.yaml",
+      "accessCount": 3,
+      "lastAccessed": 1776149538224,
+      "type": "file"
+    },
+    {
+      "path": "data\\__init__.py",
+      "accessCount": 3,
+      "lastAccessed": 1776149538388,
+      "type": "file"
+    },
+    {
+      "path": "config\\.env",
+      "accessCount": 2,
+      "lastAccessed": 1776148330842,
+      "type": "file"
+    },
+    {
+      "path": "pytest.ini",
+      "accessCount": 2,
+      "lastAccessed": 1776148507905,
+      "type": "file"
+    },
+    {
+      "path": "core\\extractor.py",
+      "accessCount": 1,
+      "lastAccessed": 1776148252489,
+      "type": "file"
+    },
+    {
+      "path": "core\\assert_helper.py",
+      "accessCount": 1,
+      "lastAccessed": 1776148253888,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -1,7 +1,0 @@
-{
-  "tool_name": "Read",
-  "tool_input_preview": "{\"file_path\":\"D:\\\\documents\\\\easy-drive\\\\客户端接口V3.3.3文档.md\"}",
-  "error": "File content (55376 tokens) exceeds maximum allowed tokens (10000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.",
-  "timestamp": "2026-04-10T08:03:42.875Z",
-  "retry_count": 1
-}

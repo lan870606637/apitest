@@ -1,0 +1,131 @@
+# 亿驾 V3.0 接口测试数据（数据驱动）
+
+# ========== 登录接口测试数据 ==========
+# 覆盖状态码: 0(成功), 3001(登录失败), 3003(短信密码已失效), 3010(验证码错误), 3018(非法手机号)
+login_phone:
+  - case_id: "LOGIN_001"
+    title: "手机号+短信密码正常登录-成功"
+    context:
+      login_type: "PHONE"
+      phone_num: "13877073541"
+      sms_password: "884569"
+    # 登录前先调用发送短信接口
+    need_send_sms_before_login: true
+    expect_code: 0
+    expect_fields_on_success: ["user_id", "token", "user_info"]
+
+  - case_id: "LOGIN_002"
+    title: "手机号为空-登录失败"
+    context:
+      login_type: "PHONE"
+      phone_num: ""
+      sms_password: "884569"
+    expect_code_in: [3001, 1010]
+
+  - case_id: "LOGIN_003"
+    title: "短信密码为空-登录失败"
+    context:
+      login_type: "PHONE"
+      phone_num: "13877073541"
+      sms_password: ""
+    expect_code_in: [3001, 1010, 3010]
+
+  - case_id: "LOGIN_004"
+    title: "错误的短信密码-验证码错误或登录频繁"
+    context:
+      login_type: "PHONE"
+      phone_num: "13877073541"
+      sms_password: "999999"
+    # 可能是 3010(验证码错误) 或 3001(登录过于频繁)
+    expect_code_in: [3010, 3001]
+
+  - case_id: "LOGIN_005"
+    title: "非法的手机号码格式或验证码失效"
+    context:
+      login_type: "PHONE"
+      phone_num: "123"
+      sms_password: "884569"
+    # 可能是 3018(非法手机号) 或 3003(验证码失效) 或 3001(登录过于频繁)
+    expect_code_in: [3018, 3003, 3001]
+
+  - case_id: "LOGIN_006"
+    title: "不存在的手机号-登录失败"
+    context:
+      login_type: "PHONE"
+      phone_num: "19999999999"
+      sms_password: "884569"
+    expect_code_in: [3001, 3003]
+
+  - case_id: "LOGIN_007"
+    title: "短信密码已失效或验证码错误"
+    context:
+      login_type: "PHONE"
+      phone_num: "13877073541"
+      sms_password: "000000"
+    # 可能是 3003(密码失效) 或 3010(验证码错误) 或 3001(登录过于频繁)
+    expect_code_in: [3003, 3010, 3001]
+
+# ========== 检查更新接口测试数据 ==========
+check_for_updates:
+  - case_id: "UPDATE_001"
+    title: "正常检查更新"
+    context: null
+    need_token: false
+    expect_code: 0
+    expect_fields: ["client_version", "user_settings", "client_settings"]
+
+# ========== 意见反馈接口测试数据 ==========
+feedback:
+  - case_id: "FEEDBACK_001"
+    title: "正常提交意见反馈"
+    context:
+      name: "feedback"
+      data:
+        contract: "13545160224"
+        content: "test feedback from automation"
+        country_name: "China"
+        area: "WuHan"
+      time: "2026-04-14 10:00:00"
+    need_token: false
+    expect_code: 0
+
+  - case_id: "FEEDBACK_002"
+    title: "反馈内容为空"
+    context:
+      name: "feedback"
+      data:
+        contract: "13545160224"
+        content: ""
+        country_name: "China"
+        area: "WuHan"
+      time: "2026-04-14 10:00:00"
+    need_token: false
+    expect_code: 0
+
+# ========== 请求短信密码接口测试数据 ==========
+send_sms_password:
+  - case_id: "SMS_001"
+    title: "正常请求短信密码"
+    context:
+      phone_num: "13877073541"
+    need_token: false
+    expect_code: 0
+
+  - case_id: "SMS_002"
+    title: "手机号为空请求短信密码"
+    context:
+      phone_num: ""
+    need_token: false
+    expect_code_not: 0
+
+# ========== 用户完善资料接口测试数据 ==========
+edit_user_info:
+  - case_id: "EDIT_001"
+    title: "修改用户昵称"
+    context:
+      actions:
+        - field_name: "nick_name"
+          val: "autotest"
+    need_token: true
+    expect_code: 0
+    expect_fields: ["user_info"]
