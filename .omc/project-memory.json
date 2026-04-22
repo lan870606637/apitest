@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776148200995,
+  "lastScanned": 1776826256467,
   "projectRoot": "D:\\jiaoben\\api_test",
   "techStack": {
     "languages": [
@@ -45,7 +45,7 @@
       "path": "config",
       "purpose": "Configuration files",
       "fileCount": 3,
-      "lastAccessed": 1776148200969,
+      "lastAccessed": 1776826256440,
       "keyFiles": [
         "config.yaml",
         "__init__.py"
@@ -54,22 +54,23 @@
     "core": {
       "path": "core",
       "purpose": null,
-      "fileCount": 5,
-      "lastAccessed": 1776148200969,
+      "fileCount": 6,
+      "lastAccessed": 1776826256440,
       "keyFiles": [
         "assert_helper.py",
         "auth.py",
         "extractor.py",
         "http_client.py",
-        "__init__.py"
+        "sign.py"
       ]
     },
     "data": {
       "path": "data",
       "purpose": "Data files",
-      "fileCount": 1,
-      "lastAccessed": 1776148200969,
+      "fileCount": 2,
+      "lastAccessed": 1776826256441,
       "keyFiles": [
+        "test_data.yaml",
         "__init__.py"
       ]
     },
@@ -77,7 +78,7 @@
       "path": "reports",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1776148200970,
+      "lastAccessed": 1776826256441,
       "keyFiles": [
         "report.html",
         "test.log"
@@ -86,10 +87,11 @@
     "testcases": {
       "path": "testcases",
       "purpose": null,
-      "fileCount": 2,
-      "lastAccessed": 1776148200970,
+      "fileCount": 3,
+      "lastAccessed": 1776826256442,
       "keyFiles": [
         "conftest.py",
+        "test_api_v3.py",
         "__init__.py"
       ]
     },
@@ -97,7 +99,7 @@
       "path": "web",
       "purpose": null,
       "fileCount": 5,
-      "lastAccessed": 1776148200970,
+      "lastAccessed": 1776826256442,
       "keyFiles": [
         "app.py",
         "models.py",
@@ -110,7 +112,7 @@
       "path": "web\\static",
       "purpose": "Static files",
       "fileCount": 1,
-      "lastAccessed": 1776148200970,
+      "lastAccessed": 1776826256443,
       "keyFiles": [
         "style.css"
       ]
@@ -119,74 +121,80 @@
   "hotPaths": [
     {
       "path": "客户端接口V3.0文档.md",
-      "accessCount": 8,
-      "lastAccessed": 1776148269891,
+      "accessCount": 15,
+      "lastAccessed": 1776826480739,
       "type": "file"
     },
     {
-      "path": "core\\http_client.py",
-      "accessCount": 6,
-      "lastAccessed": 1776149533776,
-      "type": "file"
-    },
-    {
-      "path": "config\\config.yaml",
-      "accessCount": 5,
-      "lastAccessed": 1776149583647,
-      "type": "file"
-    },
-    {
-      "path": "core\\auth.py",
-      "accessCount": 4,
-      "lastAccessed": 1776149534811,
-      "type": "file"
-    },
-    {
-      "path": "config\\__init__.py",
-      "accessCount": 4,
-      "lastAccessed": 1776149537192,
-      "type": "file"
-    },
-    {
-      "path": "testcases\\conftest.py",
-      "accessCount": 3,
-      "lastAccessed": 1776149535691,
+      "path": "testcases\\test_api_v3_plain.py",
+      "accessCount": 9,
+      "lastAccessed": 1776829349715,
       "type": "file"
     },
     {
       "path": "testcases\\test_api_v3.py",
-      "accessCount": 3,
-      "lastAccessed": 1776149536538,
+      "accessCount": 9,
+      "lastAccessed": 1776829362109,
       "type": "file"
     },
     {
-      "path": "core\\sign.py",
-      "accessCount": 3,
-      "lastAccessed": 1776149537852,
+      "path": "core\\http_client.py",
+      "accessCount": 8,
+      "lastAccessed": 1776828739620,
+      "type": "file"
+    },
+    {
+      "path": "config\\config.yaml",
+      "accessCount": 6,
+      "lastAccessed": 1776826399950,
       "type": "file"
     },
     {
       "path": "data\\test_data.yaml",
-      "accessCount": 3,
-      "lastAccessed": 1776149538224,
+      "accessCount": 6,
+      "lastAccessed": 1776828820611,
+      "type": "file"
+    },
+    {
+      "path": "core\\auth.py",
+      "accessCount": 6,
+      "lastAccessed": 1776829070601,
+      "type": "file"
+    },
+    {
+      "path": "config\\__init__.py",
+      "accessCount": 6,
+      "lastAccessed": 1776829081944,
+      "type": "file"
+    },
+    {
+      "path": "testcases\\conftest.py",
+      "accessCount": 5,
+      "lastAccessed": 1776829337480,
       "type": "file"
     },
     {
       "path": "data\\__init__.py",
-      "accessCount": 3,
-      "lastAccessed": 1776149538388,
+      "accessCount": 4,
+      "lastAccessed": 1776826367679,
       "type": "file"
     },
     {
-      "path": "config\\.env",
-      "accessCount": 2,
-      "lastAccessed": 1776148330842,
+      "path": "core\\sign.py",
+      "accessCount": 4,
+      "lastAccessed": 1776826428217,
       "type": "file"
     },
     {
       "path": "pytest.ini",
-      "accessCount": 2,
-      "lastAccessed": 1776148507905,
+      "accessCount": 4,
+      "lastAccessed": 1776828257029,
+      "type": "file"
+    },
+    {
+      "path": "config\\.env",
+      "accessCount": 4,
+      "lastAccessed": 1776829179219,
       "type": "file"
     },
     {
@@ -199,6 +207,12 @@
       "path": "core\\assert_helper.py",
       "accessCount": 1,
       "lastAccessed": 1776148253888,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\user\\.claude\\projects\\D--jiaoben-api-test\\memory\\project_universal_sms_code.md",
+      "accessCount": 1,
+      "lastAccessed": 1776829601686,
       "type": "file"
     }
   ],

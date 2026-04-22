@@ -1,16 +1,19 @@
 """亿驾 V3.0 客户端接口测试用例 - 数据驱动。
 
-共 10 条用例，覆盖：
-- 登录接口（4条）：正常登录、手机号为空、密码为空、密码错误
-- 检查更新接口（1条）：正常检查更新
-- 意见反馈接口（2条）：正常反馈、反馈内容为空
-- 请求短信密码接口（2条）：正常请求、手机号为空
-- 用户完善资料接口（1条）：修改昵称
+覆盖以下接口：
+- 基础接口: login、check-for-updates、feedback、send-sms-password、edit-user-info
+- 用户态接口: logout、user-destinations、user-settings、sign-in、user-info、
+              friend_list、add-friend、search-friend、footmark、report-traffic-info
+- 公共接口: weather、holiday、car-brand、recommend-apps、music-channels、
+            app-list、record
 """
 
 import pytest
 from core.http_client import HttpClient
 from data import yaml_parametrize
+
+# 模块级标记：整份文件属于"数据驱动"模式，可通过 pytest -m data_driven 选中
+pytestmark = pytest.mark.data_driven
 
 
 def _code(data: dict) -> int:
@@ -264,19 +267,19 @@ class TestEditUserInfo:
 
     def test_edit_user_info(self, authed_client, case):
         resp = authed_client.post("edit-user-info", context=case["context"])
-        
+
         # 断言 HTTP 状态码
         assert resp.status_code == 200, (
             f"[{case['case_id']}] HTTP 状态码错误: 期望 200, 实际 {resp.status_code}"
         )
-        
+
         data = resp.json()
         code = _code(data)
         message = data.get("message", "")
-        
+
         # 打印业务状态码信息
         _log_code_info(case["case_id"], code, message)
-        
+
         # 业务状态码断言
         _assert_code(case, code, message)
 
@@ -286,3 +289,277 @@ class TestEditUserInfo:
                 assert field in ctx, (
                     f"[{case['case_id']}] 响应缺少字段: {field}"
                 )
+
+
+# ==================== 通用测试执行器 ====================
+
+def _run_case(http_client, api_name: str, case: dict):
+    """通用接口用例执行逻辑，适用于结构简单的接口。"""
+    resp = http_client.post(api_name, context=case.get("context"))
+
+    assert resp.status_code == 200, (
+        f"[{case['case_id']}] HTTP 状态码错误: 期望 200, 实际 {resp.status_code}"
+    )
+
+    data = resp.json()
+    code = _code(data)
+    message = data.get("message", "")
+
+    _log_code_info(case["case_id"], code, message)
+    _assert_code(case, code, message)
+
+    if code == 0 and "expect_fields" in case:
+        ctx = data.get("context", {})
+        for field in case["expect_fields"]:
+            assert field in ctx, (
+                f"[{case['case_id']}] 响应缺少字段: {field}"
+            )
+
+
+# ==================== 用户登出接口测试 ====================
+
+_logout_cases, _logout_ids = yaml_parametrize("logout")
+
+
+@pytest.mark.parametrize("case", _logout_cases, ids=_logout_ids)
+class TestLogout:
+    """用户登出接口 POST /logout"""
+
+    def test_logout(self, client, fresh_authed_client, case):
+        # 用 fresh_authed_client（独立登录），避免 logout 销毁 session token
+        c = fresh_authed_client if case.get("need_token") else client
+        _run_case(c, "logout", case)
+
+
+# ==================== 路况上报接口测试 ====================
+
+_report_traffic_cases, _report_traffic_ids = yaml_parametrize("report_traffic_info")
+
+
+@pytest.mark.parametrize("case", _report_traffic_cases, ids=_report_traffic_ids)
+class TestReportTrafficInfo:
+    """路况上报接口 POST /report-traffic-info"""
+
+    def test_report_traffic_info(self, authed_client, case):
+        _run_case(authed_client, "report-traffic-info", case)
+
+
+# ==================== 常用目的地接口测试 ====================
+
+_dest_cases, _dest_ids = yaml_parametrize("user_destinations")
+
+
+@pytest.mark.parametrize("case", _dest_cases, ids=_dest_ids)
+class TestUserDestinations:
+    """用户常用目的地接口 POST /user-destinations"""
+
+    def test_user_destinations(self, authed_client, case):
+        _run_case(authed_client, "user-destinations", case)
+
+
+# ==================== 用户设置接口测试 ====================
+
+_setting_cases, _setting_ids = yaml_parametrize("user_settings")
+
+
+@pytest.mark.parametrize("case", _setting_cases, ids=_setting_ids)
+class TestUserSettings:
+    """用户设置保存接口 POST /user-settings"""
+
+    def test_user_settings(self, authed_client, case):
+        _run_case(authed_client, "user-settings", case)
+
+
+# ==================== 签到接口测试 ====================
+
+_signin_cases, _signin_ids = yaml_parametrize("sign_in")
+
+
+@pytest.mark.parametrize("case", _signin_cases, ids=_signin_ids)
+class TestSignIn:
+    """用户签到接口 POST /sign-in"""
+
+    def test_sign_in(self, authed_client, case):
+        _run_case(authed_client, "sign-in", case)
+
+
+# ==================== 天气接口测试 ====================
+
+_weather_cases, _weather_ids = yaml_parametrize("weather")
+
+
+@pytest.mark.parametrize("case", _weather_cases, ids=_weather_ids)
+class TestWeather:
+    """当前地区天气接口 POST /weather"""
+
+    def test_weather(self, client, case):
+        _run_case(client, "weather", case)
+
+
+# ==================== 节假日接口测试 ====================
+
+_holiday_cases, _holiday_ids = yaml_parametrize("holiday")
+
+
+@pytest.mark.parametrize("case", _holiday_cases, ids=_holiday_ids)
+class TestHoliday:
+    """判断是否法定节假日接口 POST /holiday"""
+
+    def test_holiday(self, client, case):
+        _run_case(client, "holiday", case)
+
+
+# ==================== 用户资料数据接口测试 ====================
+
+_user_info_cases, _user_info_ids = yaml_parametrize("user_info")
+
+
+@pytest.mark.parametrize("case", _user_info_cases, ids=_user_info_ids)
+class TestUserInfo:
+    """用户资料数据接口 POST /user-info"""
+
+    def test_user_info(self, authed_client, case):
+        _run_case(authed_client, "user-info", case)
+
+
+# ==================== 车型信息接口测试 ====================
+
+_car_brand_cases, _car_brand_ids = yaml_parametrize("car_brand")
+
+
+@pytest.mark.parametrize("case", _car_brand_cases, ids=_car_brand_ids)
+class TestCarBrand:
+    """车型信息获取接口 POST /car-brand"""
+
+    def test_car_brand(self, client, case):
+        _run_case(client, "car-brand", case)
+
+
+# ==================== 推荐应用接口测试 ====================
+
+_recommend_apps_cases, _recommend_apps_ids = yaml_parametrize("recommend_apps")
+
+
+@pytest.mark.parametrize("case", _recommend_apps_cases, ids=_recommend_apps_ids)
+class TestRecommendApps:
+    """获取推荐应用接口 POST /recommend-apps"""
+
+    def test_recommend_apps(self, client, case):
+        _run_case(client, "recommend-apps", case)
+
+
+# ==================== 音乐频道列表接口测试 ====================
+
+_music_cases, _music_ids = yaml_parametrize("music_channels")
+
+
+@pytest.mark.parametrize("case", _music_cases, ids=_music_ids)
+class TestMusicChannels:
+    """音乐频道列表接口 POST /music-channels"""
+
+    def test_music_channels(self, client, case):
+        _run_case(client, "music-channels", case)
+
+
+# ==================== 好友列表接口测试 ====================
+
+_friend_list_cases, _friend_list_ids = yaml_parametrize("friend_list")
+
+
+@pytest.mark.parametrize("case", _friend_list_cases, ids=_friend_list_ids)
+class TestFriendList:
+    """获取用户好友列表接口 POST /friend_list"""
+
+    def test_friend_list(self, authed_client, case):
+        _run_case(authed_client, "friend_list", case)
+
+
+# ==================== 添加好友接口测试 ====================
+
+_add_friend_cases, _add_friend_ids = yaml_parametrize("add_friend")
+
+
+@pytest.mark.parametrize("case", _add_friend_cases, ids=_add_friend_ids)
+class TestAddFriend:
+    """添加好友接口 POST /add-friend"""
+
+    def test_add_friend(self, authed_client, case):
+        _run_case(authed_client, "add-friend", case)
+
+
+# ==================== 搜索好友接口测试 ====================
+
+_search_friend_cases, _search_friend_ids = yaml_parametrize("search_friend")
+
+
+@pytest.mark.parametrize("case", _search_friend_cases, ids=_search_friend_ids)
+class TestSearchFriend:
+    """搜索好友接口 POST /search-friend"""
+
+    def test_search_friend(self, authed_client, case):
+        _run_case(authed_client, "search-friend", case)
+
+
+# ==================== 足迹接口测试 ====================
+
+_footmark_cases, _footmark_ids = yaml_parametrize("footmark")
+
+
+@pytest.mark.parametrize("case", _footmark_cases, ids=_footmark_ids)
+class TestFootmark:
+    """足迹(历史导航记录)接口 POST /footmark"""
+
+    def test_footmark(self, authed_client, case):
+        _run_case(authed_client, "footmark", case)
+
+
+# ==================== 应用列表上传接口测试 ====================
+
+_app_list_cases, _app_list_ids = yaml_parametrize("app_list")
+
+
+@pytest.mark.parametrize("case", _app_list_cases, ids=_app_list_ids)
+class TestAppList:
+    """应用列表数据上传接口 POST /app-list"""
+
+    def test_app_list(self, client, case):
+        _run_case(client, "app-list", case)
+
+
+# ==================== 行为记录接口测试 ====================
+
+_record_cases, _record_ids = yaml_parametrize("record")
+
+
+@pytest.mark.parametrize("case", _record_cases, ids=_record_ids)
+class TestRecord:
+    """用户行为记录接口 POST /record"""
+
+    def test_record(self, client, case):
+        _run_case(client, "record", case)
+
+
+# ==================== 发送短信密码接口补充测试 ====================
+
+_sms_ext_cases, _sms_ext_ids = yaml_parametrize("send_sms_password_ext")
+
+
+@pytest.mark.parametrize("case", _sms_ext_cases, ids=_sms_ext_ids)
+class TestSendSmsPasswordExt:
+    """发送短信密码接口 POST /send-sms-password（补充异常场景）"""
+
+    def test_send_sms_password_ext(self, client, case):
+        _run_case(client, "send-sms-password", case)
+
+
+# ==================== 意见反馈接口补充测试 ====================
+
+_feedback_ext_cases, _feedback_ext_ids = yaml_parametrize("feedback_ext")
+
+
+@pytest.mark.parametrize("case", _feedback_ext_cases, ids=_feedback_ext_ids)
+class TestFeedbackExt:
+    """意见反馈接口 POST /feedback（补充长文本/特殊字符）"""
+
+    def test_feedback_ext(self, client, case):
+        _run_case(client, "feedback", case)

@@ -28,9 +28,32 @@ def client() -> HttpClient:
     return HttpClient()
 
 
+@pytest.fixture(scope="session")
+def _session_token() -> str:
+    """整个测试会话只登录一次，复用同一个 token，避免服务端短信/登录限流。"""
+    c = HttpClient()
+    return login(c)
+
+
 @pytest.fixture(scope="function")
-def authed_client() -> HttpClient:
-    """带 token 的客户端（每条用例重新登录获取最新 token）。"""
+def authed_client(_session_token) -> HttpClient:
+    """带 token 的客户端，token 全会话复用。
+
+    注意：不要在此 client 上调用会销毁 token 的接口（如 /logout），
+    会破坏其它用例。销毁类用例请使用 fresh_authed_client。
+    """
+    c = HttpClient()
+    c.set_token(_session_token)
+    return c
+
+
+@pytest.fixture(scope="function")
+def fresh_authed_client() -> HttpClient:
+    """独立登录的客户端，每条用例重新登录，不与其它用例共享 token。
+
+    适用于会破坏 token 的接口（logout、release-3rd 等），避免污染 session token。
+    注意：频繁使用会被服务端限流。
+    """
     c = HttpClient()
     login(c)
     return c
@@ -39,5 +62,4 @@ def authed_client() -> HttpClient:
 @pytest.fixture(scope="function")
 def fresh_token(client) -> str:
     """每次获取最新 token 并设置到 client。"""
-    token = login(client)
-    return token
+    return login(client)

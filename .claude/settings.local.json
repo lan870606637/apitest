@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -c ':*)"
+      "Bash(python -c ':*)",
+      "Bash(python -m pytest testcases/test_api_v3.py --collect-only -q)",
+      "Bash(python -m pytest -m data_driven --collect-only -q)",
+      "Bash(python -m pytest -m plain --collect-only -q)",
+      "Bash(python -m pytest testcases/test_api_v3_plain.py::TestCheckForUpdates -v)",
+      "Bash(python -m pytest testcases/test_api_v3_plain.py::TestCheckForUpdates testcases/test_api_v3.py::TestCheckForUpdates -v --tb=line --no-header)",
+      "Bash(python -m pytest testcases/test_api_v3_plain.py::TestFriendList -v --tb=line)",
+      "Bash(python -m pytest testcases/test_api_v3_plain.py::TestFriendList -v --tb=short)",
+      "Bash(python -m pytest testcases/test_api_v3_plain.py::TestSignIn testcases/test_api_v3_plain.py::TestUserInfo -v --tb=line)"
     ]
   }
 }

@@ -107,10 +107,8 @@ class HttpClient:
         if extra_headers:
             headers.update(extra_headers)
 
-        # 构建明文 body
-        body = {}
-        if context is not None:
-            body["context"] = context
+        # 构建明文 body：服务端要求 body 必须包含 context 键，None 时使用空对象
+        body = {"context": context if context is not None else {}}
 
         self._log_request(url, headers, body)
 

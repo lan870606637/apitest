@@ -72,7 +72,8 @@ check_for_updates:
     context: null
     need_token: false
     expect_code: 0
-    expect_fields: ["client_version", "user_settings", "client_settings"]
+    # 实际服务端返回的字段（文档中 user_settings 已废弃）
+    expect_fields: ["client_version", "client_settings"]
 
 # ========== 意见反馈接口测试数据 ==========
 feedback:
@@ -129,3 +130,417 @@ edit_user_info:
     need_token: true
     expect_code: 0
     expect_fields: ["user_info"]
+
+  - case_id: "EDIT_002"
+    title: "修改用户性别"
+    context:
+      actions:
+        - field_name: "gender"
+          val: "女"
+    need_token: true
+    expect_code: 0
+
+  - case_id: "EDIT_003"
+    title: "修改用户出生年份"
+    context:
+      actions:
+        - field_name: "birth_year"
+          val: "1995-05-20"
+    need_token: true
+    expect_code: 0
+
+  - case_id: "EDIT_004"
+    title: "一次性修改多个字段"
+    context:
+      actions:
+        - field_name: "nick_name"
+          val: "autotest_multi"
+        - field_name: "gender"
+          val: "男"
+        - field_name: "my_car"
+          val: "4#69#3560"
+    need_token: true
+    expect_code: 0
+
+  - case_id: "EDIT_005"
+    title: "编辑不存在的字段名"
+    context:
+      actions:
+        - field_name: "not_exist_field"
+          val: "xxx"
+    need_token: true
+    # 期望 3012(编辑的列名不正确) 或 0(服务端忽略未知字段)
+    expect_code_in: [0, 3012]
+
+# ========== 用户登出接口 ==========
+logout:
+  - case_id: "LOGOUT_001"
+    title: "正常登出"
+    context:
+      action: "logout"
+    need_token: true
+    expect_code: 0
+
+  - case_id: "LOGOUT_002"
+    title: "未登录状态登出（缺少token）"
+    context:
+      action: "logout"
+    need_token: false
+    # 期望 1013(缺少USER ID) 或 1014(缺少TOKEN) 或 1015(非法TOKEN)
+    expect_code_in: [1013, 1014, 1015]
+
+# ========== 路况上报接口 ==========
+report_traffic_info:
+  - case_id: "REPORT_TRAFFIC_001"
+    title: "正常上报拥堵路况"
+    context:
+      traffic_type: "1"
+      mph: 85
+      direction: 48.5
+      time: "2026-04-22 10:00:00"
+    need_token: true
+    # 可能 0(成功) 或 5009/5010(location不合法) 或 5016(上报过于频繁)
+    expect_code_in: [0, 5009, 5010, 5016]
+
+  - case_id: "REPORT_TRAFFIC_002"
+    title: "缺少traffic_type字段"
+    context:
+      mph: 85
+      direction: 48.5
+      time: "2026-04-22 10:00:00"
+    need_token: true
+    expect_code_not: 0
+
+  - case_id: "REPORT_TRAFFIC_003"
+    title: "上报事故路况"
+    context:
+      traffic_type: "2"
+      mph: 0
+      direction: 90
+      time: "2026-04-22 10:00:00"
+    need_token: true
+    expect_code_in: [0, 5009, 5010, 5016]
+
+# ========== 常用目的地接口 ==========
+user_destinations:
+  - case_id: "DEST_001"
+    title: "显示所有目的地列表"
+    context:
+      actions: "showlist"
+    need_token: true
+    expect_code: 0
+    expect_fields: ["user_destinations"]
+
+  - case_id: "DEST_002"
+    title: "修改目的地列表"
+    context:
+      actions: "edit"
+      data:
+        - dest_name: "家"
+          dest_address: "自动化测试地址-家"
+          location:
+            longitude: 114.51005
+            latitude: 30.561933
+          order_id: "0"
+        - dest_name: "公司"
+          dest_address: "自动化测试地址-公司"
+          location:
+            longitude: 114.52005
+            latitude: 30.571933
+          order_id: "1"
+    need_token: true
+    expect_code: 0
+
+  - case_id: "DEST_003"
+    title: "非法的action name"
+    context:
+      actions: "invalid_action_name"
+    need_token: true
+    expect_code_in: [3013, 1010]
+
+  - case_id: "DEST_004"
+    title: "edit操作缺少data字段"
+    context:
+      actions: "edit"
+    need_token: true
+    expect_code_in: [1010, 3013]
+
+# ========== 用户设置接口 ==========
+user_settings:
+  - case_id: "SETTING_001"
+    title: "显示用户设置列表"
+    context:
+      actions: "showlist"
+    need_token: true
+    expect_code: 0
+    expect_fields: ["user_settings"]
+
+  - case_id: "SETTING_002"
+    title: "修改单个用户设置"
+    context:
+      actions: "edit"
+      data:
+        - id: "1"
+          setting_name: "screen_always_light"
+          setting_value: "1"
+    need_token: true
+    expect_code: 0
+
+  - case_id: "SETTING_003"
+    title: "批量修改用户设置"
+    context:
+      actions: "edit"
+      data:
+        - id: "3"
+          setting_name: "current_traffic"
+          setting_value: "1"
+        - id: "8"
+          setting_name: "voice_broadcast"
+          setting_value: "0"
+        - id: "10"
+          setting_name: "map_model"
+          setting_value: "1"
+    need_token: true
+    expect_code: 0
+
+# ========== 签到接口 ==========
+sign_in:
+  - case_id: "SIGNIN_001"
+    title: "用户签到"
+    context:
+      actions: "signin"
+    need_token: true
+    # 0(签到成功) 或 3014(一天只能签到一次)
+    expect_code_in: [0, 3014]
+
+  - case_id: "SIGNIN_002"
+    title: "缺少actions字段"
+    context: {}
+    need_token: true
+    expect_code_in: [1010, 3013]
+
+# ========== 天气接口 ==========
+weather:
+  - case_id: "WEATHER_001"
+    title: "按经纬度查询天气"
+    context:
+      location:
+        longitude: 114.51005
+        latitude: 30.561933
+    need_token: false
+    expect_code: 0
+
+  - case_id: "WEATHER_002"
+    title: "缺少location字段"
+    context: {}
+    need_token: false
+    expect_code_not: -1
+
+# ========== 节假日接口 ==========
+holiday:
+  - case_id: "HOLIDAY_001"
+    title: "查询指定日期是否节假日"
+    context:
+      date: "2026-01-01"
+    need_token: false
+    expect_code: 0
+
+  - case_id: "HOLIDAY_002"
+    title: "查询工作日是否节假日"
+    context:
+      date: "2026-04-22"
+    need_token: false
+    expect_code: 0
+
+# ========== 用户资料数据接口 ==========
+user_info:
+  - case_id: "USER_INFO_001"
+    title: "获取当前登录用户资料"
+    context: {}
+    need_token: true
+    expect_code: 0
+
+# ========== 车型信息接口 ==========
+car_brand:
+  - case_id: "CAR_BRAND_001"
+    title: "获取车型品牌列表"
+    context: null
+    need_token: false
+    expect_code: 0
+
+# ========== 推荐应用接口 ==========
+recommend_apps:
+  - case_id: "RECOMMEND_APPS_001"
+    title: "获取推荐应用列表"
+    context: null
+    need_token: false
+    expect_code: 0
+
+# ========== 音乐频道列表接口 ==========
+music_channels:
+  - case_id: "MUSIC_CHANNELS_001"
+    title: "获取音乐频道列表"
+    context: null
+    need_token: false
+    expect_code: 0
+
+# ========== 好友列表接口 ==========
+friend_list:
+  - case_id: "FRIEND_LIST_001"
+    title: "获取好友列表"
+    context: {}
+    need_token: true
+    expect_code: 0
+
+# ========== 添加好友接口 ==========
+add_friend:
+  - case_id: "ADD_FRIEND_001"
+    title: "添加自己为好友-失败"
+    context:
+      friend_id: "2000001"
+      word: "认识一下"
+    need_token: true
+    # 期望 6005(不能添加自己) 或 6003/6004(已添加过) 或 6001(添加失败)
+    expect_code_not: 0
+
+  - case_id: "ADD_FRIEND_002"
+    title: "缺少friend_id字段"
+    context:
+      word: "Hi"
+    need_token: true
+    expect_code_in: [1010, 6001]
+
+# ========== 搜索好友接口 ==========
+search_friend:
+  - case_id: "SEARCH_FRIEND_001"
+    title: "按手机号搜索好友"
+    context:
+      phone_num: "13877073541"
+    need_token: true
+    expect_code: 0
+
+  - case_id: "SEARCH_FRIEND_002"
+    title: "按不存在的手机号搜索"
+    context:
+      phone_num: "19999999999"
+    need_token: true
+    # 可能 0(返回空列表) 或 4002(查询失败)
+    expect_code_in: [0, 4002]
+
+# ========== 足迹接口 ==========
+footmark:
+  - case_id: "FOOTMARK_001"
+    title: "显示足迹列表"
+    context:
+      actions: "show_list"
+    need_token: true
+    expect_code: 0
+
+  - case_id: "FOOTMARK_002"
+    title: "错误的action"
+    context:
+      actions: "unknown_action"
+    need_token: true
+    expect_code_in: [3013, 1010]
+
+# ========== 应用列表上传接口 ==========
+app_list:
+  - case_id: "APP_LIST_001"
+    title: "正常上传已安装应用列表"
+    context:
+      apps:
+        - name: "手机QQ"
+          package_name: "com.tencent.qq"
+          version_name: "v5.6"
+          version_code: "45"
+        - name: "微信"
+          package_name: "com.tencent.weixin"
+          version_name: "v5.0"
+          version_code: "45"
+    need_token: false
+    expect_code: 0
+
+  - case_id: "APP_LIST_002"
+    title: "空应用列表"
+    context:
+      apps: []
+    need_token: false
+    expect_code: 0
+
+# ========== 行为记录接口 ==========
+record:
+  - case_id: "RECORD_001"
+    title: "上报客户端启动行为"
+    context:
+      actions:
+        - name: "startup"
+          data:
+            network: "wifi"
+            location:
+              longitude: 114.51005
+              latitude: 30.561933
+          time: "2026-04-22 10:00:00"
+    need_token: false
+    expect_code: 0
+
+  - case_id: "RECORD_002"
+    title: "上报客户端使用时长"
+    context:
+      actions:
+        - name: "client_use_duration"
+          data:
+            duration: 120
+          time: "2026-04-22 10:10:00"
+    need_token: false
+    expect_code: 0
+
+# ========== 发送短信密码接口补充 ==========
+send_sms_password_ext:
+  - case_id: "SMS_003"
+    title: "非法手机号格式-纯字母"
+    context:
+      phone_num: "abcdefghijk"
+    need_token: false
+    expect_code_not: 0
+
+  - case_id: "SMS_004"
+    title: "非法手机号-位数不够"
+    context:
+      phone_num: "138"
+    need_token: false
+    expect_code_not: 0
+
+  - case_id: "SMS_005"
+    title: "超长手机号"
+    context:
+      phone_num: "138770735411234"
+    need_token: false
+    expect_code_not: 0
+
+# ========== 意见反馈接口补充 ==========
+feedback_ext:
+  - case_id: "FEEDBACK_003"
+    title: "超长反馈内容"
+    context:
+      name: "feedback"
+      data:
+        contract: "13877073541"
+        content: "这是一条非常长的反馈内容，用于测试接口对超长文本的处理能力。"
+        country_name: "China"
+        area: "WuHan"
+      time: "2026-04-22 10:00:00"
+    need_token: false
+    expect_code: 0
+
+  - case_id: "FEEDBACK_004"
+    title: "特殊字符反馈内容"
+    context:
+      name: "feedback"
+      data:
+        contract: "13877073541"
+        content: "<script>alert('test')</script> & \"quotes\" 特殊字符测试"
+        country_name: "China"
+        area: "WuHan"
+      time: "2026-04-22 10:00:00"
+    need_token: false
+    expect_code: 0

@@ -40,4 +40,4 @@ BIZ: str = _raw_config["biz"]
 
 # 敏感信息从环境变量读取
 TEST_PHONE: str = os.getenv("TEST_PHONE", "13877073541")
-TEST_SMS_PASSWORD: str = os.getenv("TEST_SMS_PASSWORD", "110119")
+TEST_SMS_PASSWORD: str = os.getenv("TEST_SMS_PASSWORD", "884569")
