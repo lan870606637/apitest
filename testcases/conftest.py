@@ -1,11 +1,55 @@
 """全局 Fixture - 提供 HTTP 客户端、登录态等共享资源。"""
 
+import json
 import logging
 import os
+import time
+from pathlib import Path
+
 import pytest
-from config import LOG_CONFIG
+from config import LOG_CONFIG, TEST_PHONE
 from core.http_client import HttpClient
 from core.auth import login
+
+
+_TOKEN_CACHE_FILE = Path(__file__).resolve().parent.parent / ".cache" / "session_token.json"
+_TOKEN_CACHE_TTL = 6 * 3600  # 6 小时
+
+
+def _load_cached_token() -> str | None:
+    """从本地缓存读取 session token；phone 不匹配、TTL 过期、服务端校验失败时返回 None。"""
+    try:
+        data = json.loads(_TOKEN_CACHE_FILE.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+    if data.get("phone") != TEST_PHONE:
+        return None
+    if time.time() - data.get("created_at", 0) > _TOKEN_CACHE_TTL:
+        return None
+    token = data.get("token")
+    if not token or not _verify_token(token):
+        return None
+    return token
+
+
+def _save_cached_token(token: str) -> None:
+    _TOKEN_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    _TOKEN_CACHE_FILE.write_text(
+        json.dumps({"token": token, "phone": TEST_PHONE, "created_at": time.time()},
+                   ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def _verify_token(token: str) -> bool:
+    """用一次轻量的 user-info 请求校验 token 是否仍有效。"""
+    try:
+        c = HttpClient()
+        c.set_token(token)
+        resp = c.post("user-info", context={})
+        return int(resp.json().get("code", -1)) == 0
+    except Exception:
+        return False
 
 
 def pytest_configure(config):
@@ -28,11 +72,23 @@ def client() -> HttpClient:
     return HttpClient()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def _session_token() -> str:
-    """整个测试会话只登录一次，复用同一个 token，避免服务端短信/登录限流。"""
+    """整个测试会话只登录一次，并通过本地文件跨会话复用 token。
+
+    读取 .cache/session_token.json：phone 一致、TTL 未过期、服务端校验通过时直接复用，
+    从而避免每次运行都触发 login，绕开服务端对 13986903203 的登录频率限制（3001）。
+
+    autouse：必须在所有 TestLogin 类的失败用例累积服务端限流计数之前先把 token 锁定，
+    否则 authed 用例首次触发 fixture 时会撞上 3001「过度中断」。
+    """
+    cached = _load_cached_token()
+    if cached:
+        return cached
     c = HttpClient()
-    return login(c)
+    token = login(c)
+    _save_cached_token(token)
+    return token
 
 
 @pytest.fixture(scope="function")

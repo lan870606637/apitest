@@ -120,15 +120,21 @@
   },
   "hotPaths": [
     {
+      "path": "testcases\\test_api_v3_plain.py",
+      "accessCount": 39,
+      "lastAccessed": 1776850264313,
+      "type": "file"
+    },
+    {
       "path": "客户端接口V3.0文档.md",
       "accessCount": 15,
       "lastAccessed": 1776826480739,
       "type": "file"
     },
     {
-      "path": "testcases\\test_api_v3_plain.py",
-      "accessCount": 9,
-      "lastAccessed": 1776829349715,
+      "path": "testcases\\conftest.py",
+      "accessCount": 11,
+      "lastAccessed": 1776849764050,
       "type": "file"
     },
     {
@@ -138,9 +144,21 @@
       "type": "file"
     },
     {
+      "path": "core\\auth.py",
+      "accessCount": 9,
+      "lastAccessed": 1776849695051,
+      "type": "file"
+    },
+    {
       "path": "core\\http_client.py",
       "accessCount": 8,
       "lastAccessed": 1776828739620,
+      "type": "file"
+    },
+    {
+      "path": "config\\__init__.py",
+      "accessCount": 7,
+      "lastAccessed": 1776842482271,
       "type": "file"
     },
     {
@@ -156,21 +174,15 @@
       "type": "file"
     },
     {
-      "path": "core\\auth.py",
+      "path": "config\\.env",
       "accessCount": 6,
-      "lastAccessed": 1776829070601,
+      "lastAccessed": 1776843337191,
       "type": "file"
     },
     {
-      "path": "config\\__init__.py",
-      "accessCount": 6,
-      "lastAccessed": 1776829081944,
-      "type": "file"
-    },
-    {
-      "path": "testcases\\conftest.py",
+      "path": "pytest.ini",
       "accessCount": 5,
-      "lastAccessed": 1776829337480,
+      "lastAccessed": 1776850446981,
       "type": "file"
     },
     {
@@ -186,16 +198,16 @@
       "type": "file"
     },
     {
-      "path": "pytest.ini",
-      "accessCount": 4,
-      "lastAccessed": 1776828257029,
+      "path": "plain_report.html",
+      "accessCount": 3,
+      "lastAccessed": 1776841583662,
       "type": "file"
     },
     {
-      "path": "config\\.env",
-      "accessCount": 4,
-      "lastAccessed": 1776829179219,
-      "type": "file"
+      "path": "",
+      "accessCount": 2,
+      "lastAccessed": 1776844057906,
+      "type": "directory"
     },
     {
       "path": "core\\extractor.py",

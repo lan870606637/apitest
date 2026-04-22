@@ -9,7 +9,20 @@
       "Bash(python -m pytest testcases/test_api_v3_plain.py::TestCheckForUpdates testcases/test_api_v3.py::TestCheckForUpdates -v --tb=line --no-header)",
       "Bash(python -m pytest testcases/test_api_v3_plain.py::TestFriendList -v --tb=line)",
       "Bash(python -m pytest testcases/test_api_v3_plain.py::TestFriendList -v --tb=short)",
-      "Bash(python -m pytest testcases/test_api_v3_plain.py::TestSignIn testcases/test_api_v3_plain.py::TestUserInfo -v --tb=line)"
+      "Bash(python -m pytest testcases/test_api_v3_plain.py::TestSignIn testcases/test_api_v3_plain.py::TestUserInfo -v --tb=line)",
+      "Bash(grep -oE '\"log\":\"[^\"]{0,500}\"' D:/jiaoben/api_test/plain_report.html)",
+      "Bash(grep -oE 'jsonData = [^;]{0,200}' D:/jiaoben/api_test/plain_report.html)",
+      "Bash(awk 'NR==111' D:/jiaoben/api_test/plain_report.html)",
+      "Bash(grep -oE '&#34;result&#34;: &#34;Error&#34;[^}]{0,3000}')",
+      "Bash(grep -oE '&#34;result&#34;: &#34;Error&#34;[^}]{0,8000}')",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('D:/jiaoben/api_test/testcases/test_api_v3_plain.py', encoding='utf-8'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "Bash(git -C D:/jiaoben/api_test ls-files --error-unmatch config/.env)",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('D:/jiaoben/api_test/core/auth.py', encoding='utf-8'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('D:/jiaoben/api_test/testcases/conftest.py', encoding='utf-8'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "Bash(python -m pytest testcases/test_api_v3_plain.py -v --tb=short)",
+      "Bash(python -m pytest testcases/test_api_v3_plain.py -v --tb=line)",
+      "Bash(python -m pytest testcases/test_api_v3_plain.py -rs --tb=no -q)"
     ]
   }
 }
