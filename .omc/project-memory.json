@@ -121,20 +121,26 @@
   "hotPaths": [
     {
       "path": "testcases\\test_api_v3_plain.py",
-      "accessCount": 39,
-      "lastAccessed": 1776850264313,
+      "accessCount": 44,
+      "lastAccessed": 1776910500918,
       "type": "file"
     },
     {
       "path": "客户端接口V3.0文档.md",
-      "accessCount": 15,
-      "lastAccessed": 1776826480739,
+      "accessCount": 19,
+      "lastAccessed": 1776908071103,
       "type": "file"
     },
     {
       "path": "testcases\\conftest.py",
+      "accessCount": 18,
+      "lastAccessed": 1776910747708,
+      "type": "file"
+    },
+    {
+      "path": "core\\auth.py",
       "accessCount": 11,
-      "lastAccessed": 1776849764050,
+      "lastAccessed": 1776909270451,
       "type": "file"
     },
     {
@@ -144,27 +150,27 @@
       "type": "file"
     },
     {
-      "path": "core\\auth.py",
+      "path": "core\\http_client.py",
       "accessCount": 9,
-      "lastAccessed": 1776849695051,
+      "lastAccessed": 1776907998082,
       "type": "file"
     },
     {
-      "path": "core\\http_client.py",
-      "accessCount": 8,
-      "lastAccessed": 1776828739620,
+      "path": "plain_report.html",
+      "accessCount": 9,
+      "lastAccessed": 1776910218876,
       "type": "file"
     },
     {
       "path": "config\\__init__.py",
-      "accessCount": 7,
-      "lastAccessed": 1776842482271,
+      "accessCount": 8,
+      "lastAccessed": 1776908000630,
       "type": "file"
     },
     {
       "path": "config\\config.yaml",
-      "accessCount": 6,
-      "lastAccessed": 1776826399950,
+      "accessCount": 7,
+      "lastAccessed": 1776908063540,
       "type": "file"
     },
     {
@@ -186,21 +192,21 @@
       "type": "file"
     },
     {
-      "path": "data\\__init__.py",
-      "accessCount": 4,
-      "lastAccessed": 1776826367679,
-      "type": "file"
+      "path": "客户端接口V3.3.3文档.md",
+      "accessCount": 5,
+      "lastAccessed": 1776908110888,
+      "type": "directory"
     },
     {
       "path": "core\\sign.py",
-      "accessCount": 4,
-      "lastAccessed": 1776826428217,
+      "accessCount": 5,
+      "lastAccessed": 1776910352309,
       "type": "file"
     },
     {
-      "path": "plain_report.html",
-      "accessCount": 3,
-      "lastAccessed": 1776841583662,
+      "path": "data\\__init__.py",
+      "accessCount": 4,
+      "lastAccessed": 1776826367679,
       "type": "file"
     },
     {
@@ -208,6 +214,12 @@
       "accessCount": 2,
       "lastAccessed": 1776844057906,
       "type": "directory"
+    },
+    {
+      "path": "testcases\\test_api_v4_plain.py",
+      "accessCount": 2,
+      "lastAccessed": 1776909413688,
+      "type": "file"
     },
     {
       "path": "core\\extractor.py",
@@ -226,6 +238,24 @@
       "accessCount": 1,
       "lastAccessed": 1776829601686,
       "type": "file"
+    },
+    {
+      "path": "客户端接口V4.0文档.md",
+      "accessCount": 1,
+      "lastAccessed": 1776906352855,
+      "type": "file"
+    },
+    {
+      "path": "testcases\\test_api_v3_3_3_plain.py",
+      "accessCount": 1,
+      "lastAccessed": 1776908262722,
+      "type": "file"
+    },
+    {
+      "path": "reports\\test.log",
+      "accessCount": 1,
+      "lastAccessed": 1776910118808,
+      "type": "directory"
     }
   ],
   "userDirectives": []

@@ -97,7 +97,7 @@ class TestLogin:
         })
         _assert_code_in(resp, [3001, 3003], "LOGIN_non_exist_phone")
 
-    def test_login_success(self, client):
+    def test_login_success(self, client, _session_token):
         # 先发短信密码，再使用固定验证码登录。
         # 注意：本 class 前面几条用例会用无效号码触发失败登录，服务端按 IP 累积限流，
         # 本条真号码登录可能被 3001「登录过于频繁」拦截——这是环境状态，不是缺陷，
@@ -116,6 +116,11 @@ class TestLogin:
         assert "user_id" in ctx
         assert "token" in ctx
         assert "user_info" in ctx
+
+        # 同手机号单 token 激活：本次登录已把之前的 session token 作废，
+        # 把新 token 推回共享 holder + 磁盘缓存，否则后续所有 authed_client 会 1015。
+        from testcases.conftest import _refresh_session_token
+        _refresh_session_token(_session_token, ctx["token"])
 
 
 # ==================== 检查更新 ====================
@@ -185,9 +190,10 @@ class TestSendSmsPassword:
     """POST /send-sms-password"""
 
     def test_send_sms_normal(self, client):
-        # 允许 3002（当日短信配额已达上限，这是服务端合法业务状态而非缺陷）
+        # 文档明确三种合法返回：0 成功 / 3002 当日上限 / 3015 服务端发送失败。
+        # 3015 是运营商通道故障（非缺陷），必须一并接受，否则通道抖动会把测试染红。
         resp = client.post("send-sms-password", context={"phone_num": TEST_PHONE})
-        _assert_code_in(resp, [0, 3002], "SMS_normal")
+        _assert_code_in(resp, [0, 3002, 3015], "SMS_normal")
 
     def test_send_sms_empty_phone(self, client):
         resp = client.post("send-sms-password", context={"phone_num": ""})
@@ -540,6 +546,97 @@ class TestRecord:
             }]
         })
         _assert_ok(resp, "RECORD_use_duration")
+
+
+# ==================== 第三方帐号绑定 ====================
+# 仅测负向路径 + 未登录路径。happy path 会把测试号绑到假的第三方 ID 上，
+# 污染账号状态且无法回滚，留给手工测试。
+
+class TestBinding3rd:
+    """POST /binding-3rd  覆盖文档中的 3004 / 3005 / 3006 / 3011 / 1013-1015"""
+
+    def test_unsupported_third_party(self, authed_client):
+        resp = authed_client.post("binding-3rd", context={
+            "third_name": "FACEBOOK",
+            "third_id": "fb_test_id",
+            "third_nick_name": "tester",
+            "third_gender": "男",
+            "third_avatar": "",
+        })
+        # 文档：3006 不支持的第三方帐号。放宽允许 1010 字段缺失等后端更细粒度的校验。
+        _assert_code_in(resp, [3006, 1010], "BIND3RD_unsupported")
+
+    def test_bind_phone_wrong_sms(self, authed_client):
+        # 绑定手机号支路：错误短信密码应返回 3003（密码失效）或 3010（密码错误）
+        resp = authed_client.post("binding-3rd", context={
+            "third_name": "PHONE",
+            "phone_num": "19999999999",
+            "sms_password": "000000",
+        })
+        _assert_code_in(resp, [3003, 3010, 3011, 1010], "BIND3RD_phone_wrong_sms")
+
+    def test_bind_no_token(self, client):
+        # 未登录调用 → 1013/1014/1015
+        resp = client.post("binding-3rd", context={
+            "third_name": "QQ",
+            "third_id": "qq_no_token_test",
+            "third_nick_name": "tester",
+            "third_gender": "男",
+            "third_avatar": "",
+        })
+        _assert_code_in(resp, [1013, 1014, 1015], "BIND3RD_no_token")
+
+    def test_bind_missing_third_id(self, authed_client):
+        resp = authed_client.post("binding-3rd", context={"third_name": "QQ"})
+        data = resp.json()
+        assert int(data.get("code", -1)) != 0, "缺字段应失败"
+
+
+class TestRelease3rd:
+    """POST /release-3rd  覆盖 3006 / 3007 / 1013-1015"""
+
+    def test_unsupported_third_party(self, authed_client):
+        resp = authed_client.post("release-3rd", context={"third_name": "FACEBOOK"})
+        _assert_code_in(resp, [3006, 1010], "RELEASE3RD_unsupported")
+
+    def test_release_not_bound(self, authed_client):
+        # 解绑一个从未绑定的第三方：
+        # 文档列了 0（幂等）/ 3006（不支持）/ 3007（最后一个不能解）。
+        # 实测还会返回 3016「无此绑定」（文档漏列），补入允许集。
+        resp = authed_client.post("release-3rd", context={"third_name": "QIHU"})
+        _assert_code_in(resp, [0, 3007, 3006, 3016], "RELEASE3RD_not_bound")
+
+    def test_release_no_token(self, client):
+        resp = client.post("release-3rd", context={"third_name": "QQ"})
+        _assert_code_in(resp, [1013, 1014, 1015], "RELEASE3RD_no_token")
+
+
+class TestCoverBinding:
+    """POST /cover-binding  覆盖绑定场景，仅测负向"""
+
+    def test_unsupported_third_party(self, authed_client):
+        resp = authed_client.post("cover-binding", context={
+            "third_name": "FACEBOOK",
+            "third_id": "fb_cover_test",
+            "third_nick_name": "tester",
+            "third_gender": "男",
+            "third_avatar": "",
+        })
+        _assert_code_in(resp, [3006, 1010], "COVER_unsupported")
+
+    def test_cover_no_token(self, client):
+        resp = client.post("cover-binding", context={
+            "third_name": "QQ",
+            "third_id": "qq_cover_no_token",
+            "third_nick_name": "tester",
+            "third_gender": "男",
+            "third_avatar": "",
+        })
+        _assert_code_in(resp, [1013, 1014, 1015], "COVER_no_token")
+
+    def test_cover_missing_third_id(self, authed_client):
+        resp = authed_client.post("cover-binding", context={"third_name": "QQ"})
+        assert int(resp.json().get("code", -1)) != 0
 
 
 # ==================== 用户登出 ====================

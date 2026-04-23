@@ -22,7 +22,17 @@
       "Bash(python -c \"import ast; ast.parse\\(open\\('D:/jiaoben/api_test/testcases/conftest.py', encoding='utf-8'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
       "Bash(python -m pytest testcases/test_api_v3_plain.py -v --tb=short)",
       "Bash(python -m pytest testcases/test_api_v3_plain.py -v --tb=line)",
-      "Bash(python -m pytest testcases/test_api_v3_plain.py -rs --tb=no -q)"
+      "Bash(python -m pytest testcases/test_api_v3_plain.py -rs --tb=no -q)",
+      "Bash(python -m pytest testcases/test_api_v3_3_3_plain.py testcases/test_api_v4_plain.py testcases/test_api_v3_plain.py --collect-only -q)",
+      "Bash(python -m pytest testcases/test_api_v4_plain.py -v --tb=short)",
+      "Bash(python -m pytest testcases/test_api_v3_3_3_plain.py -v --tb=short)",
+      "Bash(python -m pytest \"testcases/test_api_v3_plain.py::TestBinding3rd\" \"testcases/test_api_v3_plain.py::TestRelease3rd\" \"testcases/test_api_v3_plain.py::TestCoverBinding\" -v --tb=short)",
+      "Bash(python -m pytest testcases/test_api_v4_plain.py testcases/test_api_v3_3_3_plain.py \"testcases/test_api_v3_plain.py::TestBinding3rd\" \"testcases/test_api_v3_plain.py::TestRelease3rd\" \"testcases/test_api_v3_plain.py::TestCoverBinding\" \"testcases/test_api_v3_plain.py::TestSendSmsPassword::test_send_sms_normal\" -v --tb=short)",
+      "Bash(python -m pytest testcases/test_api_v4_plain.py testcases/test_api_v3_3_3_plain.py \"testcases/test_api_v3_plain.py::TestBinding3rd\" \"testcases/test_api_v3_plain.py::TestRelease3rd\" \"testcases/test_api_v3_plain.py::TestCoverBinding\" \"testcases/test_api_v3_plain.py::TestSendSmsPassword::test_send_sms_normal\" -v --tb=line)",
+      "Bash(python -m pytest testcases/ --tb=line -q)",
+      "Bash(rm -f .cache/session_token.json)",
+      "Bash(python -m pytest -m plain --html=plain_report.html --self-contained-html --tb=line -q)",
+      "Bash(python -m pytest -m plain --tb=short -q)"
     ]
   }
 }
