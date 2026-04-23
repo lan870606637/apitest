@@ -53,15 +53,22 @@ def _verify_token(token: str) -> bool:
 
 
 def pytest_collection_modifyitems(config, items):
-    """把"会作废 session token"的用例挪到整个 session 最尾。
+    """按"对服务端的污染程度"把用例排到 session 尾部。
 
-    使用 fresh_authed_client（logout / 破坏性登录类用例）的独立 login 会把共享 token
-    作废。跨文件 alphabetical 下 test_api_v3_plain.py::TestLogout 会在 V4 之前跑，
-    之后所有 authed_client 用例都会 1015。这里按 fixturenames 识别并推到最后。
+    三档优先级（升序，越大越靠后）：
+      0  普通用例（含 test_login_success + 所有 authed_client）
+      1  使用 fresh_authed_client —— 独立 login 会作废共享 token；它本身的 login
+         还需要干净 IP，所以必须早于 dirties_ip_rate_limit
+      2  @pytest.mark.dirties_ip_rate_limit —— 失败登录累积 IP 级 3001 限流，
+         一旦跑完再做任何 login（含 fresh_authed_client 的 setup login）都会 3001
     """
-    def _is_destructive(item) -> bool:
-        return "fresh_authed_client" in getattr(item, "fixturenames", ())
-    items.sort(key=_is_destructive)  # False < True → 破坏性用例排到最后
+    def _priority(item) -> int:
+        if item.get_closest_marker("dirties_ip_rate_limit"):
+            return 2
+        if "fresh_authed_client" in getattr(item, "fixturenames", ()):
+            return 1
+        return 0
+    items.sort(key=_priority)
 
 
 def pytest_configure(config):

@@ -53,55 +53,11 @@ def _skip_if_endpoint_missing(resp, case_name: str):
 # ==================== 登录接口 ====================
 
 class TestLogin:
-    """POST /login"""
-
-    def test_login_phone_empty(self, client):
-        resp = client.post("login", context={
-            "login_type": "PHONE",
-            "phone_num": "",
-            "sms_password": TEST_SMS_PASSWORD,
-        })
-        _assert_code_in(resp, [3001, 1010, 3003], "LOGIN_phone_empty")
-
-    def test_login_sms_empty(self, client):
-        # 用不存在的号码验证空短信密码，避免污染 TEST_PHONE 的失败计数
-        resp = client.post("login", context={
-            "login_type": "PHONE",
-            "phone_num": "19999999999",
-            "sms_password": "",
-        })
-        _assert_code_in(resp, [3001, 1010, 3010, 3003], "LOGIN_sms_empty")
-
-    def test_login_wrong_sms(self, client):
-        # 用不存在的号码验证错误短信密码，避免污染 TEST_PHONE 的失败计数
-        resp = client.post("login", context={
-            "login_type": "PHONE",
-            "phone_num": "19999999999",
-            "sms_password": "999999",
-        })
-        _assert_code_in(resp, [3010, 3001, 3003], "LOGIN_wrong_sms")
-
-    def test_login_invalid_phone_format(self, client):
-        resp = client.post("login", context={
-            "login_type": "PHONE",
-            "phone_num": "123",
-            "sms_password": TEST_SMS_PASSWORD,
-        })
-        _assert_code_in(resp, [3018, 3003, 3001], "LOGIN_invalid_phone")
-
-    def test_login_non_exist_phone(self, client):
-        resp = client.post("login", context={
-            "login_type": "PHONE",
-            "phone_num": "19999999999",
-            "sms_password": TEST_SMS_PASSWORD,
-        })
-        _assert_code_in(resp, [3001, 3003], "LOGIN_non_exist_phone")
+    """POST /login —— 只放真号码正向登录，无效号码用例拆到 TestLoginInvalidPhone。"""
 
     def test_login_success(self, client, _session_token):
-        # 先发短信密码，再使用固定验证码登录。
-        # 注意：本 class 前面几条用例会用无效号码触发失败登录，服务端按 IP 累积限流，
-        # 本条真号码登录可能被 3001「登录过于频繁」拦截——这是环境状态，不是缺陷，
-        # 遇到时 skip 而非 fail。
+        # 无效号码用例已被 pytest_collection_modifyitems 推到 session 末尾，
+        # 此处不会再撞 IP 级累积限流；若线下手动单跑本类有限流，请等待窗口释放。
         client.post("send-sms-password", context={"phone_num": TEST_PHONE})
         resp = client.post("login", context={
             "login_type": "PHONE",
@@ -637,6 +593,57 @@ class TestCoverBinding:
     def test_cover_missing_third_id(self, authed_client):
         resp = authed_client.post("cover-binding", context={"third_name": "QQ"})
         assert int(resp.json().get("code", -1)) != 0
+
+
+# ==================== 登录无效号码场景 ====================
+# 这些用例会以错误号码/错误短信密码触发失败登录，服务端按 IP 累积 3001 限流。
+# 统一打 dirties_ip_rate_limit marker，pytest_collection_modifyitems 会把它们推到
+# 整个 session 的末尾（仅早于 TestLogout 这类 token 销毁类），保护 test_login_success
+# 等真号码登录在干净的限流状态下跑过。
+
+@pytest.mark.dirties_ip_rate_limit
+class TestLoginInvalidPhone:
+    """POST /login 无效号码/错误短信密码负向用例（IP 限流污染）"""
+
+    def test_login_phone_empty(self, client):
+        resp = client.post("login", context={
+            "login_type": "PHONE",
+            "phone_num": "",
+            "sms_password": TEST_SMS_PASSWORD,
+        })
+        _assert_code_in(resp, [3001, 1010, 3003], "LOGIN_phone_empty")
+
+    def test_login_sms_empty(self, client):
+        resp = client.post("login", context={
+            "login_type": "PHONE",
+            "phone_num": "19999999999",
+            "sms_password": "",
+        })
+        _assert_code_in(resp, [3001, 1010, 3010, 3003], "LOGIN_sms_empty")
+
+    def test_login_wrong_sms(self, client):
+        resp = client.post("login", context={
+            "login_type": "PHONE",
+            "phone_num": "19999999999",
+            "sms_password": "999999",
+        })
+        _assert_code_in(resp, [3010, 3001, 3003], "LOGIN_wrong_sms")
+
+    def test_login_invalid_phone_format(self, client):
+        resp = client.post("login", context={
+            "login_type": "PHONE",
+            "phone_num": "123",
+            "sms_password": TEST_SMS_PASSWORD,
+        })
+        _assert_code_in(resp, [3018, 3003, 3001], "LOGIN_invalid_phone")
+
+    def test_login_non_exist_phone(self, client):
+        resp = client.post("login", context={
+            "login_type": "PHONE",
+            "phone_num": "19999999999",
+            "sms_password": TEST_SMS_PASSWORD,
+        })
+        _assert_code_in(resp, [3001, 3003], "LOGIN_non_exist_phone")
 
 
 # ==================== 用户登出 ====================

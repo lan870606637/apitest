@@ -121,20 +121,20 @@
   "hotPaths": [
     {
       "path": "testcases\\test_api_v3_plain.py",
-      "accessCount": 44,
-      "lastAccessed": 1776910500918,
+      "accessCount": 46,
+      "lastAccessed": 1776911477541,
+      "type": "file"
+    },
+    {
+      "path": "testcases\\conftest.py",
+      "accessCount": 20,
+      "lastAccessed": 1776911535503,
       "type": "file"
     },
     {
       "path": "客户端接口V3.0文档.md",
       "accessCount": 19,
       "lastAccessed": 1776908071103,
-      "type": "file"
-    },
-    {
-      "path": "testcases\\conftest.py",
-      "accessCount": 18,
-      "lastAccessed": 1776910747708,
       "type": "file"
     },
     {
@@ -174,6 +174,12 @@
       "type": "file"
     },
     {
+      "path": "pytest.ini",
+      "accessCount": 7,
+      "lastAccessed": 1776911409369,
+      "type": "file"
+    },
+    {
       "path": "data\\test_data.yaml",
       "accessCount": 6,
       "lastAccessed": 1776828820611,
@@ -183,12 +189,6 @@
       "path": "config\\.env",
       "accessCount": 6,
       "lastAccessed": 1776843337191,
-      "type": "file"
-    },
-    {
-      "path": "pytest.ini",
-      "accessCount": 5,
-      "lastAccessed": 1776850446981,
       "type": "file"
     },
     {
