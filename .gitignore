@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 .env
 reports/
+API_test*.html
+plain_report.html
 .pytest_cache/
 .cache/
 *.egg-info/
